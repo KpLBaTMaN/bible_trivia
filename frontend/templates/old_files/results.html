@@ -1,0 +1,48 @@
+<!-- templates/results.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bible Trivia - Results</title>
+    <!-- Include Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+</head>
+
+<body>
+    <div class="container mt-5">
+        <h2 class="text-center">Quiz Results</h2>
+        <p class="text-center">Section: {{ section.name }}</p>
+        <h3 class="text-center">Your Score: {{ score }} / {{ total_questions }}</h3>
+        <p class="text-center">Time Taken: {{ time_taken }} seconds</p>
+
+        <div class="mt-4">
+            {% for result in results %}
+            <div class="card mb-3">
+                <div class="card-header">
+                    Question {{ loop.index }}
+                </div>
+                <div class="card-body">
+                    <p><strong>Question:</strong> {{ result.question_text }}</p>
+                    <p><strong>Your Answer:</strong> {{ result.selected_option_text }}</p>
+                    <p><strong>Correct Answer:</strong> {{ result.correct_option_text }}</p>
+                    <p><strong>Bible Reference:</strong> {{ result.bible_reference }}</p>
+                    <p><strong>Bible Text:</strong> {{ result.bible_text }}</p>
+                    {% if result.is_correct %}
+                    <p class="text-success"><strong>Correct!</strong></p>
+                    {% else %}
+                    <p class="text-danger"><strong>Incorrect.</strong></p>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="text-center mt-4">
+            <a href="/" class="btn btn-primary">Back to Sections</a>
+        </div>
+    </div>
+
+    <!-- Include Bootstrap JS (Optional) -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+</body>
+</html>

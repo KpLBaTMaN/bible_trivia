@@ -1,0 +1,174 @@
+{
+    "Genesis_37_50": {
+        "questions": [
+            {
+                "question_text": "What was the special gift that Jacob gave to his son Joseph, which caused jealousy among his brothers?",
+                "options": [
+                    "A golden ring",
+                    "A multicolored coat",
+                    "A pair of sandals",
+                    "A silver cup"
+                ],
+                "correct_option_index": 1,
+                "bible_reference": "Genesis 37:3",
+                "bible_reference_book": "Genesis",
+                "bible_reference_start_chapter": 37,
+                "bible_reference_end_chapter": 37,
+                "bible_reference_start_verse": 3,
+                "bible_reference_end_verse": 3,
+                "difficulty": "easy",
+                "tags": ["family", "jealousy", "old testament"],
+                "topic": "Joseph's Story",
+                "hint": "This gift made Joseph stand out among his brothers."
+            },
+            {
+                "question_text": "Which brother suggested that Joseph be sold to the Ishmaelites instead of being killed?",
+                "options": [
+                    "Reuben",
+                    "Simeon",
+                    "Judah",
+                    "Levi"
+                ],
+                "correct_option_index": 2,
+                "bible_reference": "Genesis 37:26-27",
+                "bible_reference_book": "Genesis",
+                "bible_reference_start_chapter": 37,
+                "bible_reference_end_chapter": 37,
+                "bible_reference_start_verse": 26,
+                "bible_reference_end_verse": 27,
+                "difficulty": "medium",
+                "tags": ["family", "betrayal", "old testament"],
+                "topic": "Joseph's Story",
+                "hint": "This brother later played a key role in the family’s reconciliation."
+            },
+            {
+                "question_text": "What role did Joseph eventually take in Egypt after interpreting Pharaoh’s dreams?",
+                "options": [
+                    "A slave",
+                    "A governor",
+                    "A general",
+                    "A priest"
+                ],
+                "correct_option_index": 1,
+                "bible_reference": "Genesis 41:41",
+                "bible_reference_book": "Genesis",
+                "bible_reference_start_chapter": 41,
+                "bible_reference_end_chapter": 41,
+                "bible_reference_start_verse": 41,
+                "bible_reference_end_verse": 41,
+                "difficulty": "easy",
+                "tags": ["leadership", "dreams", "old testament"],
+                "topic": "Joseph's Rise to Power",
+                "hint": "Joseph was second only to Pharaoh."
+            }
+        ]
+    },
+    "Zechariah_1_6": {
+        "questions": [
+            {
+                "question_text": "What was the significance of the four horses of different colors seen in Zechariah’s vision?",
+                "options": [
+                    "They represented the four winds of heaven",
+                    "They symbolized peace and prosperity",
+                    "They represented spirits sent to patrol the earth",
+                    "They represented the four horsemen of the apocalypse"
+                ],
+                "correct_option_index": 2,
+                "bible_reference": "Zechariah 1:8-10",
+                "bible_reference_book": "Zechariah",
+                "bible_reference_start_chapter": 1,
+                "bible_reference_end_chapter": 1,
+                "bible_reference_start_verse": 8,
+                "bible_reference_end_verse": 10,
+                "difficulty": "medium",
+                "tags": ["visions", "prophecy", "old testament"],
+                "topic": "Zechariah's Visions",
+                "hint": "The horses have a role in patrolling the earth on behalf of God."
+            },
+            {
+                "question_text": "What was the symbolism of the golden lampstand and the two olive trees in Zechariah’s vision?",
+                "options": [
+                    "The lampstand represented God's word, and the olive trees represented the nations of Israel and Judah",
+                    "The lampstand represented Zerubbabel and Joshua, and the olive trees represented God's spirit and blessing",
+                    "The lampstand represented God's presence, and the olive trees represented the anointed leaders of Israel",
+                    "The lampstand represented the temple, and the olive trees represented the tribes of Israel"
+                ],
+                "correct_option_index": 2,
+                "bible_reference": "Zechariah 4:2-3, 11-14",
+                "bible_reference_book": "Zechariah",
+                "bible_reference_start_chapter": 4,
+                "bible_reference_end_chapter": 4,
+                "bible_reference_start_verse": 2,
+                "bible_reference_end_verse": 14,
+                "difficulty": "hard",
+                "tags": ["visions", "symbolism", "old testament"],
+                "topic": "Zechariah's Visions",
+                "hint": "The olive trees are described as ‘two anointed ones who stand by the Lord of the whole earth.’"
+            }
+        ]
+    },
+    "Romans_1_10": {
+        "questions": [
+            {
+                "question_text": "According to Paul in the Book of Romans, how can a person be justified before God?",
+                "options": [
+                    "By keeping the law perfectly",
+                    "Through faith in Jesus Christ",
+                    "By offering sacrifices",
+                    "By following traditions of the elders"
+                ],
+                "correct_option_index": 1,
+                "bible_reference": "Romans 3:28",
+                "bible_reference_book": "Romans",
+                "bible_reference_start_chapter": 3,
+                "bible_reference_end_chapter": 3,
+                "bible_reference_start_verse": 28,
+                "bible_reference_end_verse": 28,
+                "difficulty": "easy",
+                "tags": ["justification", "faith", "new testament"],
+                "topic": "Justification by Faith",
+                "hint": "Paul emphasizes that it's not by works of the law but by a different means that one is justified."
+            },
+            {
+                "question_text": "What analogy does Paul use in Romans to describe the relationship between believers and Christ in the process of baptism?",
+                "options": [
+                    "A vine and its branches",
+                    "A body and its parts",
+                    "Buried with Christ and raised to life",
+                    "A shepherd and his sheep"
+                ],
+                "correct_option_index": 2,
+                "bible_reference": "Romans 6:4",
+                "bible_reference_book": "Romans",
+                "bible_reference_start_chapter": 6,
+                "bible_reference_end_chapter": 6,
+                "bible_reference_start_verse": 4,
+                "bible_reference_end_verse": 4,
+                "difficulty": "medium",
+                "tags": ["baptism", "faith", "new testament"],
+                "topic": "Union with Christ",
+                "hint": "Paul speaks about being 'buried' and 'raised' in a symbolic act."
+            },
+            {
+                "question_text": "In Romans, what does Paul declare is the purpose of God's kindness?",
+                "options": [
+                    "To show His power over sin",
+                    "To lead us to repentance",
+                    "To reward righteous behavior",
+                    "To make us prosperous"
+                ],
+                "correct_option_index": 1,
+                "bible_reference": "Romans 2:4",
+                "bible_reference_book": "Romans",
+                "bible_reference_start_chapter": 2,
+                "bible_reference_end_chapter": 2,
+                "bible_reference_start_verse": 4,
+                "bible_reference_end_verse": 4,
+                "difficulty": "easy",
+                "tags": ["repentance", "grace", "new testament"],
+                "topic": "God's Kindness",
+                "hint": "Paul suggests that God’s kindness is meant to bring about a change of heart."
+            }
+        ]
+    }
+}

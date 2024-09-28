@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block content %}
+    <h2>Quiz: {{ section.title }}</h2>
+    <div id="quiz-container">
+        <div id="question-container">
+            <!-- Question will be loaded here -->
+        </div>
+        <div id="options-container">
+            <!-- Options will be loaded here -->
+        </div>
+        <button id="next-question" class="btn">Next</button>
+        <div id="feedback"></div>
+    </div>
+    <div id="timer">Time Elapsed: <span id="time">0</span> seconds</div>
+
+    <script>
+        let currentQuestion = 0;
+        let score = 0;
+        let questions = {{ section.questions | tojson }};
+        let startTime = Date.now();
+
+        function loadQuestion() {
+            if (currentQuestion >= questions.length) {
+                endQuiz();
+                return;
+            }
+            const q = questions[currentQuestion];
+            document.getElementById('question-container').innerHTML = `<p>${q.text}</p>`;
+            const optionsHtml = q.options.map((opt, index) => `
+                <div>
+                    <input type="radio" name="option" id="option${index}" value="${opt}">
+                    <label for="option${index}">${opt}</label>
+                </div>
+            `).join('');
+            document.getElementById('options-container').innerHTML = optionsHtml;
+            document.getElementById('feedback').innerHTML = '';
+        }
+
+        function endQuiz() {
+            const timeTaken = Math.floor((Date.now() - startTime) / 1000);
+            // Submit score via API
+            fetch('/api/scores', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${getCookie('access_token')}`
+                },
+                body: JSON.stringify({ section_id: {{ section.id }}, score: score, time_taken: timeTaken })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('quiz-container').innerHTML = `<h3>Quiz Completed!</h3>
+                <p>Your Score: ${score} / ${questions.length}</p>
+                <p>Time Taken: ${timeTaken} seconds</p>
+                <a href="/sections" class="btn">Back to Sections</a>`;
+            });
+        }
+
+        document.getElementById('next-question').addEventListener('click', () => {
+            const selectedOption = document.querySelector('input[name="option"]:checked');
+            if (!selectedOption) {
+                alert('Please select an option.');
+                return;
+            }
+            const answer = selectedOption.value;
+            const correct = questions[currentQuestion].correct_option === answer;
+            if (correct) score += 1;
+            document.getElementById('feedback').innerText = correct ? 'Correct!' : `Incorrect! Correct answer: ${questions[currentQuestion].correct_option}`;
+            currentQuestion += 1;
+            setTimeout(loadQuestion, 1000);
+        });
+
+        function updateTimer() {
+            const elapsed = Math.floor((Date.now() - startTime) / 1000);
+            document.getElementById('time').innerText = elapsed;
+        }
+
+        setInterval(updateTimer, 1000);
+        loadQuestion();
+    </script>
+{% endblock %}
