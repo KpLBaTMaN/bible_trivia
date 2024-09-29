@@ -1,10 +1,9 @@
 import logging
-from fastapi import APIRouter, HTTPException
-from .. import schemas, database
+from fastapi import APIRouter, HTTPException, Depends
+from .. import schemas, database, dependencies, auth
 from typing import List
 
 # Set up logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
 router = APIRouter(
@@ -13,10 +12,11 @@ router = APIRouter(
 )
 
 @router.get("/", response_model=List[schemas.Section])
-def read_sections():
+def read_sections(
+    db: database.Database = Depends(dependencies.get_db)
+):
     logger.info("Fetching all sections")
     
-    db = database.Database()
     try:
         sections = db.get_sections()
         if not sections:
@@ -28,14 +28,14 @@ def read_sections():
     except Exception as e:
         logger.error(f"Error fetching sections: {e}")
         raise HTTPException(status_code=500, detail="An error occurred while fetching sections")
-    finally:
-        db.close()
 
 @router.post("/", response_model=schemas.Section)
-def create_new_section(section: schemas.SectionCreate):
+def create_new_section(
+    section: schemas.SectionCreate,
+    db: database.Database = Depends(dependencies.get_db)
+):
     logger.info(f"Creating a new section with details: {section}")
     
-    db = database.Database()
     try:
         new_section = db.create_section(section=section)
         logger.info(f"Created new section with id={new_section.id}")
@@ -43,14 +43,14 @@ def create_new_section(section: schemas.SectionCreate):
     except Exception as e:
         logger.error(f"Error creating new section: {e}")
         raise HTTPException(status_code=500, detail="An error occurred while creating the section")
-    finally:
-        db.close()
 
 @router.get("/{section_id}", response_model=schemas.Section)
-def read_section(section_id: int):
+def read_section(
+    section_id: int,
+    db: database.Database = Depends(dependencies.get_db)
+):
     logger.info(f"Fetching section with id={section_id}")
     
-    db = database.Database()
     try:
         section = db.get_section(section_id=section_id)
         if section is None:
@@ -62,5 +62,44 @@ def read_section(section_id: int):
     except Exception as e:
         logger.error(f"Error fetching section with id={section_id}: {e}")
         raise HTTPException(status_code=500, detail="An error occurred while fetching the section")
-    finally:
-        db.close()
+
+
+# app/routers/sections.py
+@router.post("/complete", response_model=schemas.SectionCompletionDetail)
+def complete_section(completion: schemas.SectionCompletion, current_user: schemas.User = Depends(auth.get_current_user), db: database.Database = Depends(dependencies.get_db)):
+    logger.info(f"User {current_user.user_id} completed section {completion.section_id} in {completion.time_taken_seconds} seconds")
+    
+    bonus = calculate_bonus(completion.time_taken_seconds)
+    total_correct, total_incorrect, total_unsure = db.calculate_section_performance(user_id=current_user.user_id, section_id=completion.section_id)
+    final_score = total_correct + bonus  # Assuming 1 point per correct answer
+    
+    bible_verses = db.get_bible_verses_for_section(section_id=completion.section_id)
+    
+    db.record_section_completion(
+        user_id=current_user.user_id,
+        section_id=completion.section_id,
+        time_taken=completion.time_taken_seconds,
+        bonus=bonus,
+        total_correct=total_correct,
+        total_incorrect=total_incorrect,
+        total_unsure=total_unsure
+    )
+    
+    logger.info(f"Section completion recorded for user {current_user.user_id}: correct={total_correct}, incorrect={total_incorrect}, unsure={total_unsure}, bonus={bonus}, final_score={final_score}")
+    
+    return schemas.SectionCompletionDetail(
+        total_correct=total_correct,
+        total_incorrect=total_incorrect,
+        total_unsure=total_unsure,
+        bible_verses=bible_verses,
+        final_score=final_score
+    )
+
+def calculate_bonus(time_taken_seconds: int) -> int:
+    # Define your bonus calculation logic
+    if time_taken_seconds < 60:
+        return 10
+    elif time_taken_seconds < 120:
+        return 5
+    else:
+        return 0

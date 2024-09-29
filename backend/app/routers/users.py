@@ -2,10 +2,11 @@ import logging
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from datetime import timedelta
-from .. import schemas, auth, database
+from typing import Optional
+
+from .. import schemas, auth, database, dependencies
 
 # Set up logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
 router = APIRouter(
@@ -14,32 +15,43 @@ router = APIRouter(
 )
 
 @router.post("/register", response_model=schemas.User)
-def register_user(user: schemas.UserCreate):
+def register_user(
+    user: schemas.UserCreate, 
+    db: database.Database = Depends(dependencies.get_db)
+):
     logger.info(f"Attempting to register new user: {user.username}")
     
-    db = database.Database()
     try:
         db_user = db.get_user_by_username(username=user.username)
         if db_user:
             logger.warning(f"Registration failed: Username {user.username} is already registered")
             raise HTTPException(status_code=400, detail="Username already registered")
         
-        new_user = db.create_user(user=user)
+        new_user = db.create_user(
+            user=schemas.UserCreate(
+                username=user.username, 
+                password=user.password,
+                email=user.email  # Ensure email is included
+                )
+        )
         logger.info(f"Successfully registered user with username: {user.username}")
         return new_user
     except Exception as e:
-        logger.error(f"Error during user registration for username {user.username}: {e}")
-        raise HTTPException(status_code=500, detail="An error occurred during registration")
-    finally:
-        db.close()
+        logger.error(f"Error registering user {user.username}: {e}")
+        raise HTTPException(status_code=500, detail="An error occurred during user registration")
+
 
 @router.post("/login")
-def login_user(form_data: OAuth2PasswordRequestForm = Depends()):
+def login_user(
+    form_data: OAuth2PasswordRequestForm = Depends(),
+    db: database.Database = Depends(dependencies.get_db)
+):
     logger.info(f"Login attempt for username: {form_data.username}")
     
-    db = database.Database()
     try:
         user = db.get_user_by_username(username=form_data.username)
+        print("FORM: ", form_data.password)
+        print("PASS_HASH: ", user.password_hash)
         if not user or not auth.verify_password(form_data.password, user.password_hash):
             logger.warning(f"Login failed for username: {form_data.username} - Incorrect username or password")
             raise HTTPException(status_code=400, detail="Incorrect username or password")
@@ -53,10 +65,11 @@ def login_user(form_data: OAuth2PasswordRequestForm = Depends()):
     except Exception as e:
         logger.error(f"Error during login for username {form_data.username}: {e}")
         raise HTTPException(status_code=500, detail="An error occurred during login")
-    finally:
-        db.close()
+
 
 @router.get("/me", response_model=schemas.User)
-def get_current_user_profile(current_user: schemas.User = Depends(auth.get_current_user)):
+def get_current_user_profile(
+    current_user: schemas.User = Depends(auth.get_current_user)
+):
     logger.info(f"Retrieving profile for current user: {current_user.username}")
     return current_user

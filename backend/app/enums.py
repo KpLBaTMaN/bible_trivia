@@ -2,9 +2,9 @@ from enum import Enum
 
 # Define an enum for the difficulty levels
 class Difficulty(str, Enum):
-    easy = 'easy'
-    medium = 'medium'
-    hard = 'hard'
+    beginner = 'beginner'
+    intermediate = 'intermediate'
+    advanced = 'advanced'
 
 # Define an enum for all the books of the Bible
 class BibleBook(str, Enum):

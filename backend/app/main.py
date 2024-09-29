@@ -1,7 +1,11 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware  # Import CORS middleware
 from .routers import users, sections, questions, scores
-from .database import engine, Base
+from .database import engine
+from .models import Base
+from .logging_config import setup_logging
+
+setup_logging()
 
 # Creating the Database Table
 Base.metadata.create_all(bind=engine)

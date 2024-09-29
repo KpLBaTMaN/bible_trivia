@@ -1,10 +1,10 @@
+# schemas.py
 from pydantic import BaseModel, EmailStr
 from typing import List, Optional
+from datetime import datetime
 
-from app.enums import Topics, Difficulty, BibleBook, Tag
+# ---------------- User Schemas ----------------
 
-
-### USER
 class UserBase(BaseModel):
     username: str
     email: EmailStr
@@ -14,42 +14,12 @@ class UserCreate(UserBase):
 
 class User(UserBase):
     user_id: int
-    total_score: int
 
     class Config:
         orm_mode = True
 
-### QUESTION
+# ---------------- Section Schemas ----------------
 
-class QuestionBase(BaseModel):
-    section_id: int
-    question_text: str
-    option1: str
-    option2: str
-    option3: str
-    option4: str
-    bible_reference: str
-    difficulty: Difficulty  
-    tags: List[Tag]  # Now using the Tag enum
-    topic: Optional[Topics] = None  # Now using the Topics enum
-    hint: Optional[str] = None
-    bible_reference_book: BibleBook
-    bible_reference_start_chapter: int
-    bible_reference_end_chapter: int
-    bible_reference_start_verse: int
-    bible_reference_end_verse: int
-
-class QuestionCreate(QuestionBase):
-    correct_option: int
-    bible_text: Optional[str] = None
-
-class Question(QuestionBase):
-    question_id: int
-
-    class Config:
-        orm_mode = True
-
-### SECTION
 class SectionBase(BaseModel):
     name: str
     description: Optional[str] = None
@@ -59,17 +29,48 @@ class SectionCreate(SectionBase):
 
 class Section(SectionBase):
     section_id: int
-    questions: List[Question] = []
 
     class Config:
         orm_mode = True
 
-### SCORES
+# ---------------- Question Schemas ----------------
+
+class QuestionBase(BaseModel):
+    section_id: int
+    question_text: str
+    option1: str
+    option2: str
+    option3: str
+    option4: str
+    correct_option: int
+    bible_reference: Optional[str] = None
+    bible_text: Optional[str] = None
+    difficulty: str  # e.g., "Beginner", "Intermediate", "Advanced"
+    topic: str
+    tags: Optional[List[str]] = []
+    hint: Optional[str] = None
+    bible_reference_book: Optional[str] = None
+    bible_reference_start_chapter: Optional[int] = None
+    bible_reference_end_chapter: Optional[int] = None
+    bible_reference_start_verse: Optional[int] = None
+    bible_reference_end_verse: Optional[int] = None
+
+class QuestionCreate(QuestionBase):
+    pass
+
+class Question(QuestionBase):
+    question_id: int
+
+    class Config:
+        orm_mode = True
+
+# ---------------- Score Schemas ----------------
+
 class ScoreBase(BaseModel):
     section_id: int
     attempt_number: int
     score: int
-    time_taken: int
+    time_taken: int  # Time in seconds
 
 class ScoreCreate(ScoreBase):
     pass
@@ -81,19 +82,104 @@ class Score(ScoreBase):
     class Config:
         orm_mode = True
 
-## BIBLE
+# ---------------- Bible Verse Schemas ----------------
+
 class BibleVerseBase(BaseModel):
     book_name: str
     chapter: int
     verse: int
     text: str
-    version: Optional[str] = "KJV"  # Default to KJV
+    version: str
 
 class BibleVerseCreate(BibleVerseBase):
     pass
 
 class BibleVerse(BibleVerseBase):
+    verse_id: int
+
+    class Config:
+        orm_mode = True
+
+# ---------------- Progress Schemas ----------------
+
+class ProgressBase(BaseModel):
+    user_id: int
+    section_id: int
+    question_id: int
+    is_correct: bool
+    is_unsure: bool
+
+class ProgressCreate(ProgressBase):
+    pass
+
+class Progress(ProgressBase):
+    progress_id: int
+
+    class Config:
+        orm_mode = True
+
+class SectionPerformance(BaseModel):
+    total_correct: int
+    total_incorrect: int
+    total_unsure: int
+
+    class Config:
+        orm_mode = True
+
+
+# ---------------- Leaderboard Schemas ----------------
+
+class UserScore(BaseModel):
+    username: str
+    total_score: int
+
+    class Config:
+        orm_mode = True
+
+# ---------------- Achievement Schemas ----------------
+
+class AchievementBase(BaseModel):
+    user_id: int
+    achievement_type: str
+    description: Optional[str] = None
+
+class AchievementCreate(AchievementBase):
+    date_awarded: Optional[datetime] = None
+
+class Achievement(AchievementBase):
     id: int
+    date_awarded: datetime
+
+    class Config:
+        orm_mode = True
+
+# ---------------- Section Completion Schemas ----------------
+
+class SectionCompletion(BaseModel):
+    user_id: int
+    section_id: int
+    time_taken_seconds: int
+    bonus_points: int
+    total_correct: int
+    total_incorrect: int
+    total_unsure: int
+
+class SectionCompletionResponse(BaseModel):
+    total_correct: int
+    total_incorrect: int
+    total_unsure: int
+    bible_verses: List[str]
+    final_score: int
+
+    class Config:
+        orm_mode = True
+
+class SectionCompletionDetail(BaseModel):
+    total_correct: int
+    total_incorrect: int
+    total_unsure: int
+    bible_verses: List[str]
+    final_score: int
 
     class Config:
         orm_mode = True
