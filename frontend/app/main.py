@@ -6,6 +6,8 @@ from fastapi.templating import Jinja2Templates
 import requests
 from .routers import auth, dashboard, leaderboard, trivia
 from .utils import get_current_user, API_BASE_URL
+import uvicorn
+import os
 
 
 app = FastAPI()
