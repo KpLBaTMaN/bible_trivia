@@ -5,12 +5,51 @@
 
 {% block content %}
 <div class="text-center">
-    <h1 class="display-4">Welcome to Bible Trivia</h1>
-    <p class="lead">Test your knowledge of the Bible with our engaging multiple-choice questions.</p>
+    <h1 class="display-4">Welcome to Bible Trivia!</h1>
+    <p class="lead mb-4">Deepen your understanding of the Bible with fun and challenging multiple-choice questions.</p>
+    
+    <!-- Call to Action Buttons -->
     {% if not user %}
-        <a href="/register" class="btn btn-success btn-lg">Get Started</a>
+        <a href="/register" class="btn btn-success btn-lg mb-3">Create an Account & Get Started!</a>
     {% else %}
-        <a href="/dashboard" class="btn btn-primary btn-lg">Go to Dashboard</a>
+        <a href="/dashboard" class="btn btn-primary btn-lg mb-3">Go to Your Dashboard</a>
     {% endif %}
+    
+    <!-- Section: Quiz Overview -->
+    <div class="container mt-5">
+        <h2>Quiz Material</h2>
+        <p>All questions in the quiz are based on specific Bible passages, ensuring a fair and focused experience for everyone. The three key passages you'll explore are:</p>
+        <ul class="list-group list-group-flush my-3">
+            <li class="list-group-item"><strong>Genesis</strong> chapters 37-50</li>
+            <li class="list-group-item"><strong>Zechariah</strong> chapters 1-6</li>
+            <li class="list-group-item"><strong>Romans</strong> chapters 1-10</li>
+        </ul>
+        <p class="mt-3">
+            By studying these passages, you'll delve into:
+            <ul>
+                <li><em>Genesis</em>: The story of Joseph and the development of Israel.</li>
+                <li><em>Zechariah</em>: Visions and messages from a lesser-known minor prophet.</li>
+                <li><em>Romans</em>: Foundational Christian doctrines from Paul's letter to the Romans.</li>
+            </ul>
+        </p>
+    </div>
+    
+    <!-- Section: Leaderboards -->
+    <div class="container mt-5">
+        <h2>Compete and Climb the Leaderboard!</h2>
+        <p>Track your progress as you quiz through each section. Each passage has its own leaderboard - how high can you climb?</p>
+        <!-- <p>Answer questions correctly to earn points and compete with friends and other players from around the world!</p> -->
+    </div>
+    
+    <!-- Final Call to Action -->
+    <div class="container mt-5">
+        <h3>Ready to Begin?</h3>
+        <p>Sign up, study the passages, and put your knowledge to the test!</p>
+        {% if not user %}
+            <a href="/register" class="btn btn-success btn-lg">Join Now</a>
+        {% else %}
+            <a href="/dashboard" class="btn btn-primary btn-lg">Go to Dashboard</a>
+        {% endif %}
+    </div>
 </div>
 {% endblock %}

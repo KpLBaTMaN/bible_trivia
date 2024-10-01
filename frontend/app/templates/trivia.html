@@ -38,8 +38,8 @@
                     {% set user_answer = user_answers.get(question_id) %}  <!-- Get the user's previous answer if any -->
 
                     <!-- Display Bible reference -->
-                    {% if question.bible_reference_book %}
-                        <p><em>Bible Reference: {{ question.bible_reference_book }} {{ question.bible_reference_start_chapter }}:{{ question.bible_reference_start_verse }}{% if question.bible_reference_end_verse %}-{{ question.bible_reference_end_verse }}{% endif %}</em></p>
+                    {% if question.bible_reference %}
+                        <p><em>Bible Reference: {{ question.bible_reference }}</em></p>
                     {% endif %}
 
                     {% if feedback %}

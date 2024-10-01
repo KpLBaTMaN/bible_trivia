@@ -4,10 +4,8 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 import requests
-from .routers import auth, dashboard, leaderboard, trivia
+from .routers import auth, dashboard, leaderboard, trivia, about_contact
 from .utils import get_current_user, API_BASE_URL
-import uvicorn
-import os
 
 
 app = FastAPI()
@@ -23,6 +21,7 @@ app.include_router(auth.router)
 app.include_router(dashboard.router)
 app.include_router(leaderboard.router)
 app.include_router(trivia.router)
+app.include_router(about_contact.router)
 
 @app.get("/", response_class=HTMLResponse)
 def home(request: Request):

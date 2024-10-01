@@ -48,7 +48,8 @@ def login(request: Request, username: str = Form(...), password: str = Form(...)
     if response.status_code == 200:
         token = response.json().get("access_token")
         response = RedirectResponse(url="/dashboard", status_code=303)
-        response.set_cookie(key="access_token", value=token, httponly=True, secure=True, samesite='Lax')
+        # response.set_cookie(key="access_token", value=token, httponly=True, secure=True, samesite='Lax') # When secure=True, the cookie is only sent over HTTPS connections. Since you're accessing your application via an IP address over HTTP (not HTTPS), the browser refuses to send the cookie, leading to authentication failure.
+        response.set_cookie(key="access_token", value=token, httponly=True, secure=False, samesite='Lax')
         return response
     else:
         error = response.json().get("detail", "Login failed")
