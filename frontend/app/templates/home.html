@@ -1,0 +1,16 @@
+<!-- app/templates/home.html -->
+{% extends "base.html" %}
+
+{% block title %}Home - Bible Trivia{% endblock %}
+
+{% block content %}
+<div class="text-center">
+    <h1 class="display-4">Welcome to Bible Trivia</h1>
+    <p class="lead">Test your knowledge of the Bible with our engaging multiple-choice questions.</p>
+    {% if not user %}
+        <a href="/register" class="btn btn-success btn-lg">Get Started</a>
+    {% else %}
+        <a href="/dashboard" class="btn btn-primary btn-lg">Go to Dashboard</a>
+    {% endif %}
+</div>
+{% endblock %}

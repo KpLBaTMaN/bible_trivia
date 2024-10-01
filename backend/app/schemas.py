@@ -2,18 +2,26 @@
 from pydantic import BaseModel, EmailStr
 from typing import List, Optional
 from datetime import datetime
+from .enums import Difficulty, Role, BibleBook, Topics, Tag
+from typing import Dict
 
 # ---------------- User Schemas ----------------
 
+# Base class for shared attributes
 class UserBase(BaseModel):
     username: str
     email: EmailStr
 
-class UserCreate(UserBase):
+# Schema for user creation input, excluding role
+class UserCreate(BaseModel):
+    username: str
+    email: EmailStr
     password: str
 
+# Schema for user output, includes role and other fields
 class User(UserBase):
     user_id: int
+    role: Role
 
     class Config:
         orm_mode = True
@@ -29,6 +37,7 @@ class SectionCreate(SectionBase):
 
 class Section(SectionBase):
     section_id: int
+    total_questions: int  # Add this field
 
     class Config:
         orm_mode = True
@@ -43,13 +52,13 @@ class QuestionBase(BaseModel):
     option3: str
     option4: str
     correct_option: int
-    bible_reference: Optional[str] = None
+    bible_reference: str
     bible_text: Optional[str] = None
-    difficulty: str  # e.g., "Beginner", "Intermediate", "Advanced"
-    topic: str
-    tags: Optional[List[str]] = []
+    difficulty: Difficulty  # e.g., "Beginner", "Intermediate", "Advanced"
+    topic: Topics
+    tags: Optional[List[Tag]] = []
     hint: Optional[str] = None
-    bible_reference_book: Optional[str] = None
+    bible_reference_book: Optional[BibleBook] = None
     bible_reference_start_chapter: Optional[int] = None
     bible_reference_end_chapter: Optional[int] = None
     bible_reference_start_verse: Optional[int] = None
@@ -72,10 +81,12 @@ class ScoreBase(BaseModel):
     score: int
     time_taken: int  # Time in seconds
 
+
 class ScoreCreate(ScoreBase):
     pass
 
-class Score(ScoreBase):
+
+class ScoreOut(ScoreBase):
     score_id: int
     user_id: int
 
@@ -109,11 +120,13 @@ class ProgressBase(BaseModel):
     is_correct: bool
     is_unsure: bool
 
+
 class ProgressCreate(ProgressBase):
     pass
 
 class Progress(ProgressBase):
     progress_id: int
+
 
     class Config:
         orm_mode = True
@@ -125,6 +138,19 @@ class SectionPerformance(BaseModel):
 
     class Config:
         orm_mode = True
+        
+        
+class ProgressSubmission(BaseModel):
+    section_id: int
+    answers: Dict[int, int]  # Mapping from question_id to user's answer
+
+class ProgressFeedback(BaseModel):
+    question_id: int
+    question_text: str
+    user_answer: int  # Changed from str to int
+    correct_answer: int  # Changed from str to int
+    result: str  # "Correct" or "Incorrect"
+    explanation: Optional[str] = None
 
 
 # ---------------- Leaderboard Schemas ----------------

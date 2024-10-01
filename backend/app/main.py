@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware  # Import CORS middleware
-from .routers import users, sections, questions, scores
+from .routers import users, sections, questions, scores, bible, leaderboards, progress
 from .database import engine
 from .models import Base
 from .logging_config import setup_logging
@@ -25,3 +25,6 @@ app.include_router(users.router)
 app.include_router(sections.router)
 app.include_router(questions.router)
 app.include_router(scores.router)
+app.include_router(bible.router)
+app.include_router(leaderboards.router)
+app.include_router(progress.router)

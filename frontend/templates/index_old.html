@@ -1,8 +1,0 @@
-{% extends "base.html" %}
-{% block content %}
-    <h2>Welcome to Bible Trivia!</h2>
-    <p>Test your knowledge on specific Bible passages.</p>
-    {% if not user %}
-        <a href="/register" class="btn">Get Started</a>
-    {% endif %}
-{% endblock %}

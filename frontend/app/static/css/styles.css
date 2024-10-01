@@ -1,0 +1,49 @@
+/* app/static/css/styles.css */
+
+/* Custom Brand Colors */
+:root {
+    --primary-color: #0d6efd; /* Bootstrap's default primary color */
+    --secondary-color: #6c757d; /* Bootstrap's default secondary color */
+    --accent-color: #198754; /* Success color */
+}
+
+/* Typography */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa; /* Light background for better readability */
+}
+
+/* Navbar Customization */
+.navbar-brand {
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+/* Button Customization */
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-primary:hover {
+    background-color: #0b5ed7;
+    border-color: #0a58ca;
+}
+
+/* Card Customization */
+.card-header {
+    font-size: 1.25rem;
+}
+
+/* Accordion Customization */
+.accordion-button:not(.collapsed) {
+    color: #fff;
+    background-color: var(--primary-color);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 576px) {
+    .navbar-brand {
+        font-size: 1.25rem;
+    }
+}

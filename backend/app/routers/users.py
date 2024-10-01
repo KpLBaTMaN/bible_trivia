@@ -1,10 +1,13 @@
+#users.py
 import logging
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from datetime import timedelta
 from typing import Optional
+from fastapi import status
 
 from .. import schemas, auth, database, dependencies
+from ..enums import Role
 
 # Set up logging
 logger = logging.getLogger(__name__)
@@ -14,7 +17,7 @@ router = APIRouter(
     tags=["users"],
 )
 
-@router.post("/register", response_model=schemas.User)
+@router.post("/register", response_model=schemas.User, status_code=status.HTTP_201_CREATED)
 def register_user(
     user: schemas.UserCreate, 
     db: database.Database = Depends(dependencies.get_db)
@@ -31,9 +34,11 @@ def register_user(
             user=schemas.UserCreate(
                 username=user.username, 
                 password=user.password,
-                email=user.email  # Ensure email is included
-                )
+                email=user.email, # Ensure email is included,
+                ),
+            role=Role.user
         )
+        
         logger.info(f"Successfully registered user with username: {user.username}")
         return new_user
     except Exception as e:
@@ -50,8 +55,7 @@ def login_user(
     
     try:
         user = db.get_user_by_username(username=form_data.username)
-        print("FORM: ", form_data.password)
-        print("PASS_HASH: ", user.password_hash)
+ 
         if not user or not auth.verify_password(form_data.password, user.password_hash):
             logger.warning(f"Login failed for username: {form_data.username} - Incorrect username or password")
             raise HTTPException(status_code=400, detail="Incorrect username or password")

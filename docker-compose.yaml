@@ -7,11 +7,12 @@ services:
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     volumes:
-      - db_data:/var/lib/mysql
+      - ./volumes/db_data:/var/lib/mysql
     ports:
       - "3306:3306"
     networks:
-      - app-network
+      bible_custom_net:
+        ipv4_address: ${NETWORK_IPV4_ADDRESS_DB}
 
   phpmyadmin:
     image: phpmyadmin:latest
@@ -23,7 +24,8 @@ services:
     ports:
       - "8080:80"
     networks:
-      - app-network
+      bible_custom_net:
+        ipv4_address: ${NETWORK_IPV4_ADDRESS_PHP}
 
   backend:
     build: ./backend
@@ -35,16 +37,8 @@ services:
     ports:
       - "8000:8000"
     networks:
-      - app-network
-
-  # frontend:
-  #   build: ./frontend
-  #   depends_on:
-  #     - backend
-  #   ports:
-  #     - "80:80"
-  #   networks:
-  #     - app-network
+      bible_custom_net:
+        ipv4_address: ${NETWORK_IPV4_ADDRESS_BACKEND}
 
   frontend:
     build: ./frontend
@@ -53,10 +47,11 @@ services:
     ports:
       - "80:80"
     environment:
-      - DATABASE_URL=${DATABASE_URL}
-      - SECRET_KEY=${SECRET_KEY}
+      NETWORK_IPV4_ADDRESS_BACKEND: ${NETWORK_IPV4_ADDRESS_BACKEND}
+      SECRET_KEY: ${SECRET_KEY}
     networks:
-      - app-network
+      bible_custom_net:
+        ipv4_address: ${NETWORK_IPV4_ADDRESS_FRONTEND}
 
   init-db:
     build: ./init-db
@@ -64,11 +59,34 @@ services:
       - db
     environment:
       DATABASE_URL: mysql+pymysql://${MYSQL_USER}:${MYSQL_PASSWORD}@db:3306/bible_trivia_db
+      ADMIN_USERNAME: ${ADMIN_USERNAME}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      ADMIN_EMAIL: ${ADMIN_EMAIL}
+      NETWORK_IPV4_ADDRESS_BACKEND: ${NETWORK_IPV4_ADDRESS_BACKEND}
+    
+    
     networks:
-      - app-network
+      bible_custom_net:
+        ipv4_address: ${NETWORK_IPV4_ADDRESS_INIT_DB}
+
+
+  duckdns-updater:
+    build: ./duckdns-updater
+    environment:
+      - DUCKDNS_TOKEN=${DUCKDNS_TOKEN}
+      - DUCKDNS_DOMAIN=${DUCKDNS_DOMAIN}
+    networks:
+      bible_custom_net:
+        ipv4_address: ${NETWORK_IPV4_ADDRESS_DUCKDNS}
 
 volumes:
   db_data:
 
 networks:
-  app-network:
+  bible_custom_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: ${NETWORK_SUBNET}
+          gateway: ${NETWORK_GATEWAY}
+       

@@ -18,16 +18,29 @@ def read_sections(
     logger.info("Fetching all sections")
     
     try:
-        sections = db.get_sections()
+        # Fetch all sections
+        sections = db.get_sections()  # Assuming it fetches the questions relationship as well
         if not sections:
             logger.warning("No sections found")
             raise HTTPException(status_code=404, detail="No sections found")
         
         logger.info(f"Found {len(sections)} sections")
-        return sections
+        
+        # Return sections with calculated total_questions
+        return [
+            schemas.Section(
+                section_id=section.section_id,
+                name=section.name,
+                description=section.description,
+                total_questions=len(section.questions)  # Assuming questions are eagerly loaded
+            )
+            for section in sections
+        ]
     except Exception as e:
         logger.error(f"Error fetching sections: {e}")
         raise HTTPException(status_code=500, detail="An error occurred while fetching sections")
+
+
 
 @router.post("/", response_model=schemas.Section)
 def create_new_section(

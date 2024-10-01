@@ -1,4 +1,3 @@
-# models.py
 from sqlalchemy import Column, Integer, String, ForeignKey, Text, Boolean, Enum as SqlEnum, Table, DateTime, JSON
 from sqlalchemy.orm import relationship
 from sqlalchemy.types import JSON
@@ -7,7 +6,8 @@ from sqlalchemy.ext.declarative import declarative_base
 from typing import List
 from datetime import datetime
 
-from .enums import Tag, Difficulty, Topics, BibleBook, Role
+from create_account.enums import Tag, Difficulty, Topics, BibleBook, Role
+
 
 Base = declarative_base()
 
@@ -32,18 +32,10 @@ class Section(Base):
     section_id = Column(Integer, primary_key=True, index=True)
     name = Column(String(100), unique=True, nullable=False)
     description = Column(Text, nullable=True)
-    
-    
     # Relationships
     questions = relationship("Question", back_populates="section")
     scores = relationship("Score", back_populates="section")
     completions = relationship("SectionCompletion", back_populates="section")
-    progresses = relationship("Progress", back_populates="section")
-    
-    # Property to count total questions
-    @property
-    def total_questions(self):
-        return len(self.questions)  # Assuming self.questions is already a list of related Question objects
 
 
 class Question(Base):
@@ -57,7 +49,7 @@ class Question(Base):
     option3 = Column(String(255), nullable=False)
     option4 = Column(String(255), nullable=False)
     correct_option = Column(Integer, nullable=False)
-    bible_reference = Column(String(255), nullable=False)
+    bible_reference = Column(String(255), nullable=True)
     bible_text = Column(Text, nullable=True)
     difficulty = Column(SqlEnum(Difficulty), nullable=False)
     topic = Column(SqlEnum(Topics), nullable=False)
@@ -70,10 +62,7 @@ class Question(Base):
     bible_reference_end_verse = Column(Integer, nullable=True)
     # Relationships
     section = relationship("Section", back_populates="questions")
-    progresses = relationship("Progress", back_populates="question")
 
-
-# ---------------- Score SQLAlchemy Model ----------------
 
 class Score(Base):
     __tablename__ = 'scores'
@@ -84,7 +73,6 @@ class Score(Base):
     attempt_number = Column(Integer, nullable=False)
     score = Column(Integer, nullable=False)
     time_taken = Column(Integer, nullable=False)  # Time in seconds
-
     # Relationships
     user = relationship("User", back_populates="scores")
     section = relationship("Section", back_populates="scores")
@@ -99,11 +87,10 @@ class Progress(Base):
     question_id = Column(Integer, ForeignKey('questions.question_id'), nullable=False)
     is_correct = Column(Boolean, default=False)
     is_unsure = Column(Boolean, default=False)
-
     # Relationships
     user = relationship("User", back_populates="progresses")
-    section = relationship("Section", back_populates="progresses")
-    question = relationship("Question", back_populates="progresses")
+    # Assuming Question model exists
+    question = relationship("Question")
 
 
 class BibleVerse(Base):

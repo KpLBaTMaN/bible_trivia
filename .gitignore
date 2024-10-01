@@ -1,2 +1,22 @@
 ./venv
 venv
+
+
+
+# Environents
+.env
+env
+
+
+# Volumes
+./volumes
+volumes
+
+./modified_data
+modified_data
+
+./modified_data
+modified_data
+
+./data
+data

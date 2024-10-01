@@ -2,6 +2,7 @@ import logging
 from fastapi import APIRouter, HTTPException, Depends
 from .. import schemas, database, dependencies
 from typing import List, Optional
+from fastapi import status
 
 # Set up logging
 logger = logging.getLogger(__name__)
@@ -31,10 +32,10 @@ def create_new_question(
     question: schemas.QuestionCreate, 
     db: database.Database = Depends(dependencies.get_db)
 ):
-    logger.info(f"Creating a new question with title='{question.title}'")
+    logger.info(f"Creating a new question with='{question.question_text}'")
     
     new_question = db.create_question(question=question)
-    logger.info(f"Created new question with id={new_question.id}")
+    logger.info(f"Created new question")
     return new_question
 
 @router.get("/{question_id}", response_model=schemas.Question)
@@ -89,3 +90,21 @@ def read_questions_by_section(
     
     logger.info(f"Found {len(questions)} questions for section_id={section_id} with difficulty={difficulty}")
     return questions
+
+
+
+@router.post(
+    "/bulk_create/",
+    response_model=List[schemas.Question],
+    status_code=status.HTTP_201_CREATED,
+    dependencies=[Depends(dependencies.require_role("admin"))]
+)
+def bulk_create_questions(
+    questions: List[schemas.QuestionCreate],
+    db: database.Database = Depends(dependencies.get_db)
+):
+    created_questions = []
+    for question in questions:
+        new_question = db.create_question(question=question)
+        created_questions.append(new_question)
+    return created_questions

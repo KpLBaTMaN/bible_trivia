@@ -1,0 +1,99 @@
+<!-- app/templates/trivia.html -->
+{% extends "base.html" %}
+
+{% block title %}Trivia - {{ section.name }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2 class="mb-4">{{ section.name }}</h2>
+        
+        {% if feedback %}
+            <!-- Display the total score at the top -->
+            <div class="alert alert-info">
+                <strong>Quiz Completed!</strong> You answered {{ total_correct }} out of {{ total_questions }} questions correctly.
+            </div>
+        {% endif %}
+        
+        <form method="post" action="/trivia/{{ section.id }}">
+            {% for question in questions %}
+                <div class="mb-4 p-3 border rounded">
+                    <p class="fw-bold">{{ loop.index }}. {{ question.question_text }}</p>
+                    
+                    <!-- Display Difficulty -->
+                    <p>
+                        <strong>Difficulty:</strong> 
+                        {% if question.difficulty == 'beginner' %}
+                            <span class="text-success">{{ question.difficulty }}</span>
+                        {% elif question.difficulty == 'intermediate' %}
+                            <span class="text-warning">{{ question.difficulty }}</span>
+                        {% elif question.difficulty == 'advanced' %}
+                            <span class="text-danger">{{ question.difficulty }}</span>
+                        {% else %}
+                            <span>{{ question.difficulty }}</span> <!-- Default styling if undefined -->
+                        {% endif %}
+                    </p>
+                    
+                    {% set question_id = question.question_id %}
+                    {% set user_answer = user_answers.get(question_id) %}  <!-- Get the user's previous answer if any -->
+
+                    <!-- Display Bible reference -->
+                    {% if question.bible_reference_book %}
+                        <p><em>Bible Reference: {{ question.bible_reference_book }} {{ question.bible_reference_start_chapter }}:{{ question.bible_reference_start_verse }}{% if question.bible_reference_end_verse %}-{{ question.bible_reference_end_verse }}{% endif %}</em></p>
+                    {% endif %}
+
+                    {% if feedback %}
+                        {% set item = feedback[loop.index0] %}
+                    {% endif %}
+                    
+                    {% for option in question.options %}
+                        {% set option_index = loop.index0 + 1 %}
+                        {% set is_user_answer = user_answer == option_index %}
+                        {% if feedback %}
+                            {% set is_correct_answer = option_index == item.correct_answer %}
+                            {% set option_class = '' %}
+                            {% if is_correct_answer %}
+                                {% set option_class = 'text-success fw-bold' %}
+                            {% elif is_user_answer and item.result == 'Incorrect' %}
+                                {% set option_class = 'text-danger' %}
+                            {% endif %}
+                        {% endif %}
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" 
+                                   name="q{{ question_id }}" 
+                                   id="q{{ question_id }}_{{ loop.index0 }}" 
+                                   value="{{ option_index }}" 
+                                   required
+                                   {% if is_user_answer %}checked{% endif %}
+                                   {% if feedback %}disabled{% endif %}>
+                            <label class="form-check-label {{ option_class }}" for="q{{ question_id }}_{{ loop.index0 }}">
+                                {{ option }}
+                            </label>
+                        </div>
+                    {% endfor %}
+
+                    <!-- Feedback Section for Each Question -->
+                    {% if feedback %}
+                        <div class="mt-2">
+                            <p class="{% if item.result == 'Correct' %}text-success{% else %}text-danger{% endif %}">
+                                <strong>{{ item.result }}!</strong>
+                                {% if item.result == 'Incorrect' %}
+                                    The correct answer was: <span class="text-success">{{ item.correct_answer_text }}</span>.
+                                {% endif %}
+                            </p>
+                            {% if item.explanation %}
+                                <p><strong>Explanation:</strong> {{ item.explanation }}</p>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+            {% if not feedback %}
+                <button type="submit" class="btn btn-primary w-100 mt-4">Submit Answers</button>
+            {% else %}
+                <a href="/trivia/{{ section.id }}" class="btn btn-secondary w-100 mt-4">Retake Quiz</a>
+            {% endif %}
+        </form>
+    </div>
+</div>
+{% endblock %}

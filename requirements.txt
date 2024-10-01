@@ -1,0 +1,14 @@
+# General
+notebook
+pandas
+numpy
+openpyxl
+
+# GPU UI
+nvitop
+
+# Progess
+tqdm
+
+# models
+openai
