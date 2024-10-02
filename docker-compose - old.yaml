@@ -40,46 +40,6 @@ services:
       bible_custom_net:
         ipv4_address: ${NETWORK_IPV4_ADDRESS_BACKEND}
 
-  init-db:
-    build: ./init-db
-    depends_on:
-      - db
-    environment:
-      DATABASE_URL: mysql+pymysql://${MYSQL_USER}:${MYSQL_PASSWORD}@db:3306/bible_trivia_db
-      ADMIN_USERNAME: ${ADMIN_USERNAME}
-      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
-      ADMIN_EMAIL: ${ADMIN_EMAIL}
-      NETWORK_IPV4_ADDRESS_BACKEND: ${NETWORK_IPV4_ADDRESS_BACKEND}
-    
-    networks:
-      bible_custom_net:
-        ipv4_address: ${NETWORK_IPV4_ADDRESS_INIT_DB}
-
-  traefik:
-    image: traefik:v2.9
-    command:
-      - --entrypoints.web.address=:80
-      - --entrypoints.websecure.address=:443
-      - --providers.docker=true
-      - --providers.docker.exposedbydefault=false
-      - --certificatesresolvers.myresolver.acme.httpchallenge=true
-      - --certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web
-      - --certificatesresolvers.myresolver.acme.email=${LETSENCRYPT_EMAIL}
-      - --certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json
-    ports:
-      - "80:80"     # HTTP port
-      - "443:443"   # HTTPS port
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./traefik/letsencrypt:/letsencrypt
-    networks:
-      bible_custom_net:
-        aliases:
-          - traefik
-
-
-
-
   frontend:
     build: ./frontend
     depends_on:
@@ -94,6 +54,23 @@ services:
       bible_custom_net:
         ipv4_address: ${NETWORK_IPV4_ADDRESS_FRONTEND}
 
+  init-db:
+    build: ./init-db
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: mysql+pymysql://${MYSQL_USER}:${MYSQL_PASSWORD}@db:3306/bible_trivia_db
+      ADMIN_USERNAME: ${ADMIN_USERNAME}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      ADMIN_EMAIL: ${ADMIN_EMAIL}
+      NETWORK_IPV4_ADDRESS_BACKEND: ${NETWORK_IPV4_ADDRESS_BACKEND}
+    
+    
+    networks:
+      bible_custom_net:
+        ipv4_address: ${NETWORK_IPV4_ADDRESS_INIT_DB}
+
+
   duckdns-updater:
     build: ./duckdns-updater
     environment:
@@ -103,15 +80,8 @@ services:
       bible_custom_net:
         ipv4_address: ${NETWORK_IPV4_ADDRESS_DUCKDNS}
 
-
-
-
-
 volumes:
   db_data:
-
-
-
 
 networks:
   bible_custom_net:

@@ -10,7 +10,7 @@ from . import database
 # Configuration variables
 SECRET_KEY = os.getenv('SECRET_KEY', 'your_secret_key')
 ALGORITHM = 'HS256'
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24  # 1440 minutes for a full day
 
 # Password context for hashing and verifying
 pwd_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
@@ -29,7 +29,12 @@ def get_password_hash(password: str):
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     """Create a JWT access token with an expiration time."""
     to_encode = data.copy()
-    expire = datetime.utcnow() + (expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
+    
+    # Set default expiration to 24 hours if not provided
+    if expires_delta is None:
+        expires_delta = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    
+    expire = datetime.utcnow() + expires_delta
     to_encode.update({'exp': expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
