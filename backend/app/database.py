@@ -36,7 +36,6 @@ class Database:
         # Create the User model instance, setting the role internally
         db_user = models.User(
             username=user.username,
-            email=user.email,
             password_hash=hashed_password,
             role=role  # Set role from argument, default is Role.user
         )

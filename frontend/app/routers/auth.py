@@ -1,4 +1,5 @@
 # app/routers/auth.py
+
 from fastapi import APIRouter, Request, Form, Depends
 from fastapi.responses import RedirectResponse, HTMLResponse
 from fastapi.templating import Jinja2Templates
@@ -17,10 +18,9 @@ def register_form(request: Request):
 def register(
     request: Request, 
     username: str = Form(...), 
-    email: str = Form(...),  # New email field
     password: str = Form(...)
 ):
-    data = {"username": username, "email": email, "password": password}  # Include email
+    data = {"username": username, "password": password}
     try:
         response = requests.post(f"{API_BASE_URL}/users/register", json=data)
     except requests.exceptions.RequestException as e:
@@ -36,7 +36,6 @@ def register(
         error = "Registration failed. Please try again."
     return templates.TemplateResponse("register.html", {"request": request, "error": error})
 
-
 @router.get("/login", response_class=HTMLResponse)
 def login_form(request: Request):
     return templates.TemplateResponse("login.html", {"request": request})
@@ -48,7 +47,6 @@ def login(request: Request, username: str = Form(...), password: str = Form(...)
     if response.status_code == 200:
         token = response.json().get("access_token")
         response = RedirectResponse(url="/dashboard", status_code=303)
-        # response.set_cookie(key="access_token", value=token, httponly=True, secure=True, samesite='Lax') # When secure=True, the cookie is only sent over HTTPS connections. Since you're accessing your application via an IP address over HTTP (not HTTPS), the browser refuses to send the cookie, leading to authentication failure.
         response.set_cookie(key="access_token", value=token, httponly=True, secure=False, samesite='Lax')
         return response
     else:

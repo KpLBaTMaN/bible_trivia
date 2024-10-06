@@ -33,9 +33,8 @@ def register_user(
         new_user = db.create_user(
             user=schemas.UserCreate(
                 username=user.username, 
-                password=user.password,
-                email=user.email, # Ensure email is included,
-                ),
+                password=user.password
+            ),
             role=Role.user
         )
         

@@ -9,23 +9,23 @@ services:
     volumes:
       - ./volumes/db_data:/var/lib/mysql
     ports:
-      - "3307:3306"
+      - "3306:3306"
     networks:
       bible_custom_net:
         ipv4_address: ${NETWORK_IPV4_ADDRESS_DB}
 
-  # phpmyadmin:
-  #   image: phpmyadmin:latest
-  #   depends_on:
-  #     - db
-  #   environment:
-  #     PMA_HOST: db
-  #     MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-  #   ports:
-  #     - "8082:80"
-  #   networks:
-  #     bible_custom_net:
-  #       ipv4_address: ${NETWORK_IPV4_ADDRESS_PHP}
+  phpmyadmin:
+    image: phpmyadmin:latest
+    depends_on:
+      - db
+    environment:
+      PMA_HOST: db
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    ports:
+      - "8080:80"
+    networks:
+      bible_custom_net:
+        ipv4_address: ${NETWORK_IPV4_ADDRESS_PHP}
 
   backend:
     build: ./backend
@@ -40,6 +40,20 @@ services:
       bible_custom_net:
         ipv4_address: ${NETWORK_IPV4_ADDRESS_BACKEND}
 
+  frontend:
+    build: ./frontend
+    depends_on:
+      - backend
+    ports:
+      - "${FRONTEND_PORT}:80"
+    environment:
+      NETWORK_IPV4_ADDRESS_BACKEND: ${NETWORK_IPV4_ADDRESS_BACKEND}
+      SECRET_KEY: ${SECRET_KEY}
+      FRONTEND_PORT: ${FRONTEND_PORT}
+    networks:
+      bible_custom_net:
+        ipv4_address: ${NETWORK_IPV4_ADDRESS_FRONTEND}
+
   init-db:
     build: ./init-db
     depends_on:
@@ -51,58 +65,10 @@ services:
       ADMIN_EMAIL: ${ADMIN_EMAIL}
       NETWORK_IPV4_ADDRESS_BACKEND: ${NETWORK_IPV4_ADDRESS_BACKEND}
     
+    
     networks:
       bible_custom_net:
         ipv4_address: ${NETWORK_IPV4_ADDRESS_INIT_DB}
-
-  traefik:
-    image: traefik:v2.9
-    command:
-      - --entrypoints.web.address=:80
-      - --entrypoints.websecure.address=:443
-      - --providers.docker=true
-      - --providers.docker.exposedbydefault=false
-      - --certificatesresolvers.myresolver.acme.httpchallenge=true
-      - --certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web
-      - --certificatesresolvers.myresolver.acme.email=${LETSENCRYPT_EMAIL}
-      - --certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json
-    ports:
-      - "80:80"     # HTTP port
-      - "443:443"   # HTTPS port
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./traefik/letsencrypt:/letsencrypt
-    networks:
-      bible_custom_net:
-        aliases:
-          - traefik
-
-
-  frontend:
-    build: ./frontend
-    depends_on:
-      - backend
-    environment:
-      NETWORK_IPV4_ADDRESS_BACKEND: ${NETWORK_IPV4_ADDRESS_BACKEND}
-      SECRET_KEY: ${SECRET_KEY}
-      FRONTEND_PORT: ${FRONTEND_PORT}
-    networks:
-      bible_custom_net:
-    labels:
-      - "traefik.enable=true"
-
-      # HTTPS router
-      - "traefik.http.routers.frontend-secure.rule=Host(`${DUCKDNS_DOMAIN_FULL}`)"
-      - "traefik.http.services.frontend.loadbalancer.server.port=80"
-      - "traefik.http.routers.frontend-secure.entrypoints=websecure"
-      - "traefik.http.routers.frontend-secure.tls.certresolver=myresolver"
-      - "traefik.http.routers.frontend-secure.tls=true"
-
-      # HTTP router with redirection to HTTPS
-      - "traefik.http.routers.frontend-insecure.rule=Host(`${DUCKDNS_DOMAIN_FULL}`)"
-      - "traefik.http.routers.frontend-insecure.entrypoints=web"
-      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
-      - "traefik.http.routers.frontend-insecure.middlewares=redirect-to-https"
 
 
   duckdns-updater:
@@ -114,10 +80,8 @@ services:
       bible_custom_net:
         ipv4_address: ${NETWORK_IPV4_ADDRESS_DUCKDNS}
 
-
 volumes:
   db_data:
-
 
 networks:
   bible_custom_net:

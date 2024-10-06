@@ -7,8 +7,8 @@ import requests
 from .routers import auth, dashboard, leaderboard, trivia, about_contact
 from .utils import get_current_user, API_BASE_URL
 
-
 app = FastAPI()
+
 
 # Mount static files
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
@@ -22,6 +22,19 @@ app.include_router(dashboard.router)
 app.include_router(leaderboard.router)
 app.include_router(trivia.router)
 app.include_router(about_contact.router)
+
+# Redirect https to http middleware
+@app.middleware("http")
+async def https_to_http_redirect(request: Request, call_next):
+    # Check if the request is using https
+    if request.url.scheme == "https":
+        # Construct the new URL with http
+        url = request.url.replace(scheme="http")
+        return RedirectResponse(url=url)
+
+    # Continue processing the request as usual
+    response = await call_next(request)
+    return response
 
 @app.get("/", response_class=HTMLResponse)
 def home(request: Request):

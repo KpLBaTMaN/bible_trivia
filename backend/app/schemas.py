@@ -10,12 +10,10 @@ from typing import Dict
 # Base class for shared attributes
 class UserBase(BaseModel):
     username: str
-    email: EmailStr
 
-# Schema for user creation input, excluding role
+# Schema for user creation input
 class UserCreate(BaseModel):
     username: str
-    email: EmailStr
     password: str
 
 # Schema for user output, includes role and other fields
